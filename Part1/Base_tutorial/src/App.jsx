@@ -1,16 +1,13 @@
-const Hello = (props) => {
-
-    const name = props.name
-    const age = props.age
+const Hello = ({ name, age }) => {
 
     const bornYear = () => new Date().getFullYear() - age
 
     const bornYear2 = () => {
         const yearNow = new Date().getFullYear()
-        return yearNow - props.age
+        return yearNow - age
     }
 
-    console.log(props)
+    console.log(name, age)
     return (
         <div>
             <p>Hello {name}, you are {age} years old </p>
@@ -19,7 +16,9 @@ const Hello = (props) => {
     )
 }
 
-const App = () => {
+const App = (props) => {
+
+    const {counter} = props
 
     // Console related variables
     const now = new Date()
@@ -50,6 +49,8 @@ const App = () => {
             <p>{friends[0].name} is {friends[0].age} years old</p>
             <p>{friends[1].name} is {friends[1].age} years old</p>
             <p>{friendArray[0]} and {friendArray[1]} are rendered properly</p>
+            <h1>Implementation of a counter</h1>
+            <div>{counter}</div>
         </div>
     )
 }
