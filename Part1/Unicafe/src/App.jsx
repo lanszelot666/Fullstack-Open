@@ -67,15 +67,22 @@ const App = () => {
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
   const [selected, setSelected] = useState(0);
+  const [anecdotePoints, setPoints] = useState(new Uint8Array(8))
 
   const handleGoodFeedback = () => handleFeedback("good");
   const handleNeutralFeedback = () => handleFeedback("neutral");
   const handleBadFeedback = () => handleFeedback("bad");
 
-  const handleAnecdoteButton = () => {
+  const updateDisplayedAnecdote = () => {
     const rand = Math.floor(Math.random() * 8);
     setSelected(rand);
     console.log("Random generated number: ", rand);
+  };
+  
+  const handleAnecdoteVote = () => {
+    const copiedPointsArray = {...anecdotePoints};
+    copiedPointsArray[selected] += 1;
+    setPoints(copiedPointsArray);
   };
 
   const handleFeedback = (feedbackType) => {
@@ -91,7 +98,9 @@ const App = () => {
   return (
     <div>
       <h3>{anecdotes[selected]}</h3>
-      <Button handleClick={handleAnecdoteButton} text="next anecdote" />
+      <h3>has {anecdotePoints[selected]} votes</h3>
+      <Button handleClick={handleAnecdoteVote} text="vote" />
+      <Button handleClick={updateDisplayedAnecdote} text="next anecdote" />
       <Header title="give feedback" />
       <Button handleClick={handleGoodFeedback} text="good" />
       <Button handleClick={handleNeutralFeedback} text="neutral" />
