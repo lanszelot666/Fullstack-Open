@@ -19,14 +19,16 @@ const Statistics = ({ good, bad, neutral }) => {
 
   if (good > 0 || neutral > 0 || bad > 0) {
     return (
-      <div>
-        <StatisticLine text="good" value={good}/>
-        <StatisticLine text="neutral" value={neutral}/>
-        <StatisticLine text="bad" value={bad}/>
-        <StatisticLine text="all" value={calculateAll()}/>
-        <StatisticLine text="average" value={calculateAverage().toFixed(2)}/>
-        <StatisticLine text="postive" value={calculatePositive().toFixed(2)}/>
-      </div>
+      <table>
+        <tbody>
+          <StatisticLine text="good" value={good} />
+          <StatisticLine text="neutral" value={neutral} />
+          <StatisticLine text="bad" value={bad} />
+          <StatisticLine text="all" value={calculateAll()} />
+          <StatisticLine text="average" value={calculateAverage().toFixed(2)} />
+          <StatisticLine text="postive" value={calculatePositive().toFixed(2)}/>
+        </tbody>
+      </table>
     );
   } else {
     return <p>No feedback given</p>;
@@ -34,10 +36,15 @@ const Statistics = ({ good, bad, neutral }) => {
 };
 
 const StatisticLine = ({ text, value }) => {
+  const leftPadding = {
+    paddingLeft: "20px",
+  };
+
   return (
-    <p>
-      {text} {value}
-    </p>
+    <tr>
+      <td>{text}</td>
+      <td style={leftPadding}>{value}</td>
+    </tr>
   );
 };
 
