@@ -17,22 +17,28 @@ const Statistics = ({ good, bad, neutral }) => {
   const calculateAverage = () => (good - bad) / (good + neutral + bad);
   const calculatePositive = () => (good / (good + neutral + bad)) * 100;
 
-  if (good > 0 || neutral > 0 || bad > 0)
-  {
+  if (good > 0 || neutral > 0 || bad > 0) {
+    return (
+      <div>
+        <StatisticLine text="good" value={good}/>
+        <StatisticLine text="neutral" value={neutral}/>
+        <StatisticLine text="bad" value={bad}/>
+        <StatisticLine text="all" value={calculateAll()}/>
+        <StatisticLine text="average" value={calculateAverage().toFixed(2)}/>
+        <StatisticLine text="postive" value={calculatePositive().toFixed(2)}/>
+      </div>
+    );
+  } else {
+    return <p>No feedback given</p>;
+  }
+};
+
+const StatisticLine = ({ text, value }) => {
   return (
-    <div>
-      <p>good {good}</p>
-      <p>neutral {neutral}</p>
-      <p>bad {bad}</p>
-      <p>all {calculateAll()}</p>
-      <p>average {calculateAverage().toFixed(2)}</p>
-      <p>postive {calculatePositive().toFixed(2)} %</p>
-    </div>
+    <p>
+      {text} {value}
+    </p>
   );
-  }
-  else {
-    return <p>No feedback given</p>
-  }
 };
 
 const App = () => {
