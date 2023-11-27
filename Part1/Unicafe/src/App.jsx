@@ -67,7 +67,7 @@ const App = () => {
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
   const [selected, setSelected] = useState(0);
-  const [anecdotePoints, setPoints] = useState(new Uint8Array(8))
+  const [anecdotePoints, setPoints] = useState(new Uint8Array(8));
 
   const handleGoodFeedback = () => handleFeedback("good");
   const handleNeutralFeedback = () => handleFeedback("neutral");
@@ -78,11 +78,16 @@ const App = () => {
     setSelected(rand);
     console.log("Random generated number: ", rand);
   };
-  
+
   const handleAnecdoteVote = () => {
-    const copiedPointsArray = {...anecdotePoints};
+    const copiedPointsArray = new Uint8Array(anecdotePoints);
     copiedPointsArray[selected] += 1;
     setPoints(copiedPointsArray);
+
+    console.log("New points array: ", copiedPointsArray);
+    console.log(anecdotePoints); // Check the actual content
+    console.log(Array.isArray(anecdotePoints)); // Is it an array?
+    console.log(anecdotePoints instanceof Uint8Array); // Verify if it's a Uint8Array
   };
 
   const handleFeedback = (feedbackType) => {
@@ -95,12 +100,27 @@ const App = () => {
     setBad(updatedBad);
   };
 
+  const displayMostVotedAnecdote = () => {
+    // Reducing elements of the array resulting in the max only
+    const maxPoints = anecdotePoints.reduce(
+      (max, current) => Math.max(max, current),
+      -Infinity
+    );
+
+    const index = anecdotePoints.indexOf(maxPoints);
+    console.log("Highest value index: ", index); // This will log the index of the highest value in the array
+    return anecdotes[index];
+  };
+
   return (
     <div>
-      <h3>{anecdotes[selected]}</h3>
-      <h3>has {anecdotePoints[selected]} votes</h3>
+      <Header title="Anecdote of the day" />
+      <p>{anecdotes[selected]}</p>
+      <p>has {anecdotePoints[selected]} votes</p>
       <Button handleClick={handleAnecdoteVote} text="vote" />
       <Button handleClick={updateDisplayedAnecdote} text="next anecdote" />
+      <Header title="Anecdote with most votes" />
+      <p>{displayMostVotedAnecdote()}</p>
       <Header title="give feedback" />
       <Button handleClick={handleGoodFeedback} text="good" />
       <Button handleClick={handleNeutralFeedback} text="neutral" />
