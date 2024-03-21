@@ -6,7 +6,6 @@ const App = () => {
   const [newName, setNewName] = useState("");
 
   const handleNewName = (event) => {
-    console.log(event.target.value);
     setNewName(event.target.value);
   };
 
@@ -17,10 +16,18 @@ const App = () => {
       name: newName,
     };
 
-    console.log("persons: ", persons);
-    persons.push(newPerson);
+    const names = persons.map((person) => person.name);
 
-    setPersons(persons);
+    if (!names.includes(newName)) {
+      persons.push(newPerson);
+      setPersons(persons);
+    } else {
+      window.alert(`${newName} is already added to phonebook`);
+    }
+
+    console.log("persons: ", persons);
+    console.log("name array: ", names);
+
     setNewName("");
   };
 
