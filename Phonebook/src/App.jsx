@@ -1,5 +1,7 @@
 import { useState } from "react";
-import Person from "./components/Person";
+import Persons from "./components/Persons";
+import PersonForm from "./components/PersonForm";
+import FilterForm from "./components/FilterForm";
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -10,12 +12,12 @@ const App = () => {
   ]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
-  const [nameFilter, setNameFilter] = useState("");
+  const [filter, setNameFilter] = useState("");
 
-  function resetStates() {
+  const resetStates = () => {
     setNewName("");
     setNewNumber("");
-  }
+  };
 
   const handleNewName = (event) => {
     setNewName(event.target.value);
@@ -25,19 +27,11 @@ const App = () => {
     setNewNumber(event.target.value);
   };
 
-  const filterPhonebook = (event) => {
+  const handleFilter = (event) => {
     setNameFilter(event.target.value);
   };
 
-  const addNewPerson = (event) => {
-    event.preventDefault();
-
-    const newPerson = {
-      name: newName,
-      number: newNumber,
-      id: persons.length + 1,
-    };
-
+  const isInputDataCorrect = () => {
     const names = persons.map((person) => person.name);
     const numbers = persons.map((person) => person.number);
 
@@ -46,7 +40,7 @@ const App = () => {
         `${newName} is already present in the phonebook. Please provide a unique name!`
       );
       setNewName("");
-      return;
+      return false;
     }
 
     if (numbers.includes(newNumber)) {
@@ -54,55 +48,52 @@ const App = () => {
         `The phone number: ${newNumber} is already present in the phonebook. Please provide a unique number!`
       );
       setNewNumber("");
-      return;
+      return false;
     }
 
     if (newName == "" || newNumber == "") {
       window.alert(
         "One of the fields is empty.\nPlease provide a valid name and number!"
       );
-      return;
+      return false;
     }
+    return true;
+  };
 
-    persons.push(newPerson);
-    setPersons(persons);
+  const addNewPerson = (event) => {
+    event.preventDefault();
 
-    console.log("persons: ", persons);
-    console.log("name array: ", names);
+    if (isInputDataCorrect()) {
+      const newPerson = {
+        name: newName,
+        number: newNumber,
+        id: persons.length + 1,
+      };
 
-    resetStates(setNewName, setNewNumber);
+      persons.push(newPerson);
+      setPersons(persons);
+
+      resetStates(setNewName, setNewNumber);
+    }
   };
 
   return (
     <div>
-      <h2>Phonebook</h2>
-      <div>
-        filter shown for names that include:{" "}
-        <input value={nameFilter} onChange={filterPhonebook} />
-      </div>
+      <h1>Phonebook</h1>
+      <h2>Filter</h2>
+      <FilterForm filter={filter} handleFilterChange={handleFilter} />
+
       <h2>Add new person</h2>
-      <form onSubmit={addNewPerson}>
-        <div>
-          Name: <input value={newName} onChange={handleNewName} />
-        </div>
-        <div>
-          Phone number: <input value={newNumber} onChange={handleNewNumber} />
-        </div>
-        <div>
-          <button type="submit">Add</button>
-        </div>
-      </form>
+      <PersonForm
+        handleSubmit={addNewPerson}
+        handleNameChange={handleNewName}
+        handleNumberChange={handleNewNumber}
+        name={newName}
+        number={newNumber}
+      />
+
       <h2>Numbers</h2>
-      <div>
-        {persons.map((person) => (
-          <Person
-            key={person.id}
-            name={person.name}
-            number={person.number}
-            filter={nameFilter}
-          />
-        ))}
-      </div>
+      <Persons persons={persons} filter={filter} />
     </div>
   );
 };
