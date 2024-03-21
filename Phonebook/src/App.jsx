@@ -3,10 +3,14 @@ import Person from "./components/Person";
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "040-1234567" },
+    { name: "Arto Hellas", number: "040-123456", id: 1 },
+    { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
+    { name: "Dan Abramov", number: "12-43-234345", id: 3 },
+    { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
   ]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+  const [nameFilter, setNameFilter] = useState("");
 
   function resetStates() {
     setNewName("");
@@ -21,12 +25,17 @@ const App = () => {
     setNewNumber(event.target.value);
   };
 
+  const filterPhonebook = (event) => {
+    setNameFilter(event.target.value);
+  };
+
   const addNewPerson = (event) => {
     event.preventDefault();
 
     const newPerson = {
       name: newName,
       number: newNumber,
+      id: persons.length + 1,
     };
 
     const names = persons.map((person) => person.name);
@@ -67,21 +76,31 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <div>
+        filter shown for names that include:{" "}
+        <input value={nameFilter} onChange={filterPhonebook} />
+      </div>
+      <h2>Add new person</h2>
       <form onSubmit={addNewPerson}>
         <div>
-          name: <input value={newName} onChange={handleNewName} />
+          Name: <input value={newName} onChange={handleNewName} />
         </div>
         <div>
-          number: <input value={newNumber} onChange={handleNewNumber} />
+          Phone number: <input value={newNumber} onChange={handleNewNumber} />
         </div>
         <div>
-          <button type="submit">add</button>
+          <button type="submit">Add</button>
         </div>
       </form>
       <h2>Numbers</h2>
       <div>
         {persons.map((person) => (
-          <Person key={person.name} name={person.name} number={person.number} />
+          <Person
+            key={person.id}
+            name={person.name}
+            number={person.number}
+            filter={nameFilter}
+          />
         ))}
       </div>
     </div>
