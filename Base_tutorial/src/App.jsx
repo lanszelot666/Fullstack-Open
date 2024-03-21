@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import Note from "./components/Note";
 
 const History = (props) => {
@@ -20,6 +21,22 @@ const App = (props) => {
   const [notes, setNotes] = useState(props.notes);
   const [newNote, setNewNote] = useState("a new note...");
   const [showAll, setShowAll] = useState(true);
+
+  // Demo for fetching data from json-server
+  const [fetchedNotes, setFetchedNotes] = useState([]);
+
+  // Fetch the data from the json-server /notes endpoint and log it out
+  const hook = () => {
+    console.log("effect");
+    axios.get("http://localhost:3001/notes").then((response) => {
+      console.log("promise fulfilled");
+      setFetchedNotes(response.data);
+    });
+  };
+
+  useEffect(hook, []);
+
+  console.log("render", fetchedNotes.length, "notes");
 
   const handleNoteChange = (event) => {
     console.log(event.target.value);
