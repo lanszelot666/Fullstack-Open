@@ -22,28 +22,8 @@
     },
     {
       "id": 5,
-      "name": "My Name",
-      "number": "123-012345123"
-    },
-    {
-      "id": 6,
-      "name": "Hello Two",
-      "number": "14-1235151"
-    },
-    {
-      "id": 7,
-      "name": "ASDASD Hello",
-      "number": "989-923859238495"
-    },
-    {
-      "id": 8,
-      "name": "LOLOLo",
-      "number": "232-2323"
-    },
-    {
-      "id": 9,
-      "name": "Another New Entry",
-      "number": "123-21321"
+      "name": "Alma Mater",
+      "number": "123-12341515"
     }
   ]
 }

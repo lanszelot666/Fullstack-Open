@@ -2,9 +2,7 @@ import { useState, useEffect } from "react";
 import Persons from "./components/Persons";
 import PersonForm from "./components/PersonForm";
 import FilterForm from "./components/FilterForm";
-import axios from "axios";
-
-const baseUrl = "http://localhost:3001/persons";
+import personService from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -15,9 +13,8 @@ const App = () => {
   // Fetch the data from the json-server /persons endpoint and fill out the initial state of persons
   useEffect(() => {
     console.log("effect");
-    axios.get(baseUrl).then((response) => {
-      console.log("promise fulfilled");
-      setPersons(response.data);
+    personService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
     });
   }, []);
 
@@ -79,9 +76,9 @@ const App = () => {
         id: persons.length + 1,
       };
 
-      axios.post(baseUrl, newPerson).then((response) => {
-        console.log("response.data: ", response.data);
-        const newPersons = persons.concat(response.data);
+      personService.create(newPerson).then((updatedPerson) => {
+        console.log("response.data: ", updatedPerson);
+        const newPersons = persons.concat(updatedPerson);
         setPersons(newPersons);
         console.log("Persons after post request: ", newPersons);
       });
