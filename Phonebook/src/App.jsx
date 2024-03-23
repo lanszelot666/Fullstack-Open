@@ -13,7 +13,6 @@ const App = () => {
 
   // Fetch the data from the json-server /persons endpoint and fill out the initial state of persons
   useEffect(() => {
-    console.log("effect");
     personService.getAll().then((initialPersons) => {
       const initialMaxId =
         initialPersons.length == 0
@@ -23,8 +22,8 @@ const App = () => {
       setPersons(initialPersons);
       setMaxId(initialMaxId);
 
-      console.log("Initial state of persons: ", initialPersons);
-      console.log("Initial maxId: ", initialMaxId);
+      console.log("[GET] - Initial state of persons: ", initialPersons);
+      console.log("[GET] - Initial maxId: ", initialMaxId);
     });
   }, []);
 
@@ -46,17 +45,7 @@ const App = () => {
   };
 
   const isInputDataCorrect = () => {
-    const names = persons.map((person) => person.name);
     const numbers = persons.map((person) => person.number);
-
-    if (names.includes(newName)) {
-      window.alert(
-        `${newName} is already present in the phonebook. Please provide a unique name!`
-      );
-      setNewName("");
-      return false;
-    }
-
     if (numbers.includes(newNumber)) {
       window.alert(
         `The phone number: ${newNumber} is already present in the phonebook. Please provide a unique number!`
@@ -77,20 +66,53 @@ const App = () => {
   const addNewPerson = (event) => {
     event.preventDefault();
 
+    // Check if both fields are filled --> initialize a newPerson object
     if (isInputDataCorrect()) {
       const newPerson = {
         name: newName,
         number: newNumber,
-        id: (maxId + 1).toString(),
+        id: undefined,
       };
 
-      setMaxId(maxId + 1);
+      // CASE 1: Name already exists in the Phonebook --> PUT request if confirmed
+      const names = persons.map((person) => person.name);
+      if (names.includes(newName)) {
+        if (
+          window.confirm(
+            `${newName} is already added to the phonebook. Replace the old number with the new one?`
+          )
+        ) {
+          const existingPerson = persons.find(
+            (person) => person.name === newName
+          );
 
-      personService.create(newPerson).then((updatedPerson) => {
-        console.log("response.data: ", updatedPerson);
-        const newPersons = persons.concat(updatedPerson);
+          newPerson.id = existingPerson.id;
+          console.log("[PUT] - New person to be updated: ", newPerson);
+          personService
+            .update(existingPerson.id, newPerson)
+            .then((updatedPerson) => {
+              console.log("[PUT] - Updated person: ", updatedPerson);
+              const newPersons = persons.map((person) =>
+                person.id === newPerson.id ? newPerson : person
+              );
+              setPersons(newPersons);
+              console.log("[PUT] - Persons after update: ", persons);
+            });
+          resetStates();
+          return;
+        }
+      }
+
+      // CASE 2: Name does not exist in the Phonebook yet --> POST request
+      newPerson.id = (maxId + 1).toString();
+      setMaxId(maxId + 1);
+      console.log("[POST] - New person to be added: ", newPerson);
+
+      personService.create(newPerson).then((addedPerson) => {
+        console.log("[POST] - Added person: ", addedPerson);
+        const newPersons = persons.concat(addedPerson);
         setPersons(newPersons);
-        console.log("Persons after post request: ", newPersons);
+        console.log("[POST] - Persons after add: ", newPersons);
       });
 
       resetStates();
@@ -99,11 +121,13 @@ const App = () => {
 
   const deletePerson = (id) => {
     const personToBeDeleted = persons.find((person) => person.id === id);
+    console.log("[DELETE] - Person to be deleted: ", personToBeDeleted);
+
     if (window.confirm(`Delete ${personToBeDeleted.name} ?`)) {
       personService.remove(id).then((deletedPerson) => {
-        console.log(`Deletion happened for ${deletedPerson.name}`);
+        console.log(`[DELETE] - Deletion happened for ${deletedPerson.name}`);
         const filteredPersons = persons.filter((person) => person.id !== id);
-        console.log("Filter persons: ", filteredPersons);
+        console.log("[DELETE] - Persons after deletion: ", filteredPersons);
         setPersons(filteredPersons);
       });
     }
