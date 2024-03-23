@@ -9,16 +9,24 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setNameFilter] = useState("");
+  const [maxId, setMaxId] = useState(0);
 
   // Fetch the data from the json-server /persons endpoint and fill out the initial state of persons
   useEffect(() => {
     console.log("effect");
     personService.getAll().then((initialPersons) => {
+      const initialMaxId =
+        initialPersons.length == 0
+          ? 0
+          : Math.max(...initialPersons.map((person) => person.id));
+
       setPersons(initialPersons);
+      setMaxId(initialMaxId);
+
+      console.log("Initial state of persons: ", initialPersons);
+      console.log("Initial maxId: ", initialMaxId);
     });
   }, []);
-
-  console.log("Initial state of persons: ", persons);
 
   const resetStates = () => {
     setNewName("");
@@ -73,8 +81,10 @@ const App = () => {
       const newPerson = {
         name: newName,
         number: newNumber,
-        id: persons.length + 1,
+        id: (maxId + 1).toString(),
       };
+
+      setMaxId(maxId + 1);
 
       personService.create(newPerson).then((updatedPerson) => {
         console.log("response.data: ", updatedPerson);
@@ -84,6 +94,18 @@ const App = () => {
       });
 
       resetStates();
+    }
+  };
+
+  const deletePerson = (id) => {
+    const personToBeDeleted = persons.find((person) => person.id === id);
+    if (window.confirm(`Delete ${personToBeDeleted.name} ?`)) {
+      personService.remove(id).then((deletedPerson) => {
+        console.log(`Deletion happened for ${deletedPerson.name}`);
+        const filteredPersons = persons.filter((person) => person.id !== id);
+        console.log("Filter persons: ", filteredPersons);
+        setPersons(filteredPersons);
+      });
     }
   };
 
@@ -103,7 +125,11 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      <Persons persons={persons} filter={filter} />
+      <Persons
+        persons={persons}
+        filter={filter}
+        toggleDeleteOf={deletePerson}
+      />
     </div>
   );
 };
