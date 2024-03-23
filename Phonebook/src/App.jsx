@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Persons from "./components/Persons";
 import PersonForm from "./components/PersonForm";
 import FilterForm from "./components/FilterForm";
+import Notification from "./components/Notification";
 import personService from "./services/persons";
 
 const App = () => {
@@ -10,6 +11,8 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [filter, setNameFilter] = useState("");
   const [maxId, setMaxId] = useState(0);
+  const [updateMessage, setUpdateMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   // Fetch the data from the json-server /persons endpoint and fill out the initial state of persons
   useEffect(() => {
@@ -63,6 +66,13 @@ const App = () => {
     return true;
   };
 
+  const updateNotificationMessage = (person) => {
+    setUpdateMessage(`Added ${person.name} to the Phonebook`);
+    setTimeout(() => {
+      setUpdateMessage(null);
+    }, 5000);
+  };
+
   const addNewPerson = (event) => {
     event.preventDefault();
 
@@ -96,7 +106,16 @@ const App = () => {
                 person.id === newPerson.id ? newPerson : person
               );
               setPersons(newPersons);
+              updateNotificationMessage(newPerson);
               console.log("[PUT] - Persons after update: ", persons);
+            })
+            .catch((error) => {
+              setErrorMessage(
+                `Information of ${newPerson.name} has already been removed from server`
+              );
+              setTimeout(() => {
+                setErrorMessage(null);
+              }, 5000);
             });
           resetStates();
           return;
@@ -112,6 +131,7 @@ const App = () => {
         console.log("[POST] - Added person: ", addedPerson);
         const newPersons = persons.concat(addedPerson);
         setPersons(newPersons);
+        updateNotificationMessage(addedPerson);
         console.log("[POST] - Persons after add: ", newPersons);
       });
 
@@ -136,6 +156,9 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={updateMessage} colorType={"green"} />
+      <Notification message={errorMessage} colorType={"red"} />
+
       <h2>Filter</h2>
       <FilterForm filter={filter} handleFilterChange={handleFilter} />
 
