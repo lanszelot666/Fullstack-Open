@@ -14,6 +14,7 @@ const Country = ({ country }) => {
       <img
         src={country.flag}
         alt={country.flagAlt}
+        title={country.flagAlt}
         style={{
           maxWidth: "200px",
           maxHeight: "200px",
