@@ -23,6 +23,21 @@ const Country = ({ country }) => {
           display: "block", // Ensures the image does not have extra space around it
         }}
       />
+      <h2>Weather in {}country.capital</h2>
+      <div>Temperature: {country.weather.temperature} Celsius degrees</div>
+      <img
+        src={country.weather.icon}
+        alt={country.weather.description}
+        title={country.weather.description}
+        style={{
+          maxWidth: "200px",
+          maxHeight: "200px",
+          width: "auto",
+          height: "auto",
+          display: "block",
+        }}
+      />
+      <div>Wind: {country.weather.wind} km/h</div>
     </div>
   );
 };

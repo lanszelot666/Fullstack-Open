@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Country from "./Country";
 import countryService from "../services/countries";
+import weatherService from "../services/weather";
 
 const Countries = ({ countriesAll, countryFilter }) => {
   const [fetchedCountry, setFetchedCountry] = useState(null); // State to store the fetched country
@@ -16,11 +17,8 @@ const Countries = ({ countriesAll, countryFilter }) => {
     country.name.toLowerCase().includes(countryFilter.toLowerCase())
   );
 
-  console.log("Countries all passed: ", countriesAll);
   console.log("Filter passed: ", countryFilter);
   console.log("Fetched country state: ", fetchedCountry);
-  console.log("Filtered countries: ", filteredCountries);
-  console.log("Filtered countries length: ", filteredCountries.length);
 
   const toggleCountryView = (countryName) => {
     console.log(`Button triggered for ${countryName}`);
@@ -29,7 +27,28 @@ const Countries = ({ countriesAll, countryFilter }) => {
       .getOne(countryName)
       .then((fetchedCountryData) => {
         console.log("FETCHED: ", fetchedCountryData);
-        setFetchedCountry(fetchedCountryData);
+        return weatherService
+          .getWeather(fetchedCountryData.capital)
+          .then((weatherData) => {
+            return { fetchedCountryData, weatherData }; // Return both fetchedCountryData and weatherData as a combined result
+          });
+      })
+      .then((combinedData) => {
+        console.log("WEATHER DATA: ", combinedData.weatherData);
+        console.log("COUNTRY DATA: ", combinedData.fetchedCountryData);
+
+        const enrichedCountry = {
+            ...combinedData.fetchedCountryData,
+            weather: {
+                temperature: (combinedData.weatherData.main.temp - 273.15).toFixed(2),
+                wind: (combinedData.weatherData.wind.speed * 3.6).toFixed(2),
+                icon: `https://openweathermap.org/img/wn/${combinedData.weatherData.weather[0].icon}@2x.png`,
+                description: combinedData.weatherData.weather[0].description,
+            }
+        }
+        console.log("ENRICHED DATA: ", enrichedCountry);
+
+        setFetchedCountry(enrichedCountry);
       })
       .catch((error) =>
         console.error("Failed to fetch country details:", error)
