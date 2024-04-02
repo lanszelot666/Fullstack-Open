@@ -11,9 +11,11 @@
   "author": "Balazs Gonter",
   "license": "MIT",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.19.2"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.4",
     "nodemon": "^3.1.0"
   }
 }
